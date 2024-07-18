@@ -4,22 +4,38 @@ import { User } from "../models/user.model.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import { ApiResponse } from '../utils/ApiResponse.js';
 
+// const generateAccessandRefreshTokens = async (userId) => {
+//     try {
+//         const user = await User.findById(userId)
+//         const accessToken = user.generateAccessToken()
+
+//         const refreshToken = user.generateRefreshToken()
+//         user.refreshToken = refreshToken
+//         await user.save({ validateBeforeSave: false })
+
+//         return { accessToken, refreshToken }
+
+//     } catch (error) {
+//         throw new ApiError(500, "Error in generating tokens")
+
+//     }
+// }
+
 const generateAccessandRefreshTokens = async (userId) => {
     try {
-        const user = await User.findById(userId)
-        const accessToken = user.generateAccessToken()
+        const user = await User.findById(userId);
+        const accessToken = user.generateAccessToken();
 
-        const refreshToken = user.generateRefreshToken()
-        user.refreshToken = refreshToken
-        await user.save({ validateBeforeSave: false })
+        const refreshToken = user.generateRefreshToken();
+        user.refreshToken = refreshToken;
+        await user.save({ validateBeforeSave: false });
 
-        return { accessToken, refreshToken }
-
+        return { accessToken, refreshToken };
     } catch (error) {
-        throw new ApiError(500, "Error in generating tokens")
-
+        throw new ApiError(500, "Error in generating tokens");
     }
-}
+};
+
 
 const registerUser = asyncHandler(async (req, res) => {
     //get user details from frontend
@@ -99,9 +115,12 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const { email, username, password } = req.body;
 
-    if (!username || !email) {
+    if (!username && !email) {
         throw new ApiError(400, "Username or email is required")
     }
+    // if (!(username || email) || !password) { // Ensure either username or email and password are provided
+    //     throw new ApiError(400, "Username or email and password are required");
+    // }
     const user = await User.findOne({ $or: [{ username }, { email }] })
 
     if (!user) {
